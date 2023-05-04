@@ -12,13 +12,16 @@ class Point:
         self.y = float(y)
 
     def print(self):
+        """
+        prints the values of the attributes "x" and "y".
+        """
         print("{0} {1}".format(self.x, self.y))
 
-    def elipse_eq(self):
-        return [self.x**2, self.y**2, self.x * self.y, self.x, self.y, 1]
+    def conic_eq(self):
+        return [self.x**2, self.x * self.y, self.y**2, self.x, self.y]
 
-    def elipse_sq(self):
-        return self.x**2 + self.y**2 - 1
+    def conic_constant(self):
+        return -1
 
     x = 0
     y = 0
@@ -42,17 +45,44 @@ eq = []
 if numrows == 5:
     print("Given five points an elipse will be calculated")
     for i in range(5):
-        eq.append(inputarray[i].elipse_eq())
-        sol.append(inputarray[i].elipse_sq())
+        eq.append(inputarray[i].conic_eq())
+        sol.append(inputarray[i].conic_constant())
     eqarray = np.array(eq)
     solarray = np.array(sol)
-    solution = np.linalg.solve(eqarray, solarray)
+    solution, _, _, _ = np.linalg.lstsq(eqarray, solarray, rcond=None)
 
 
-Equation = ["Equation:", "{0}y^2,{1}x^2+{2}xy+{3}x+{4}y=1"]
+if solution[0] < 0:
+    pr_sol0 = str(solution[0])
+else:
+    pr_sol0 = "+" + str(solution[0])
+if solution[1] < 0:
+    pr_sol1 = str(solution[1])
+else:
+    pr_sol1 = "+" + str(solution[1])
+if solution[2] < 0:
+    pr_sol2 = str(solution[2])
+else:
+    pr_sol2 = "+" + str(solution[2])
+if solution[3] < 0:
+    pr_sol3 = str(solution[3])
+else:
+    pr_sol3 = "+" + str(solution[3])
+if solution[4] < 0:
+    pr_sol4 = str(solution[4])
+else:
+    pr_sol4 = "+" + str(solution[4])
+
+Equation = [
+    "Equation:",
+    "{0}x^2{1}xy{2}y^2{3}x{4}y+1 = 0".format(
+        pr_sol0, pr_sol1, pr_sol2, pr_sol3, pr_sol4
+    ),
+]
 print(Equation[0], Equation[1])
 
-f = open("output AS1.csv", "w")
+
+f = open("output AS2.csv", "w")
 
 writer = csv.writer(f)
 writer.writerow(Equation)
