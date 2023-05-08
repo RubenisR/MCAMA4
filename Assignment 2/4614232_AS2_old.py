@@ -15,10 +15,10 @@ class Point:
         print("{0} {1}".format(self.x, self.y))
 
     def conic_sq(self):
-        return [self.x**2, self.y**2, 1]
+        return -self.x**2
 
     def conic_eq(self):
-        return [self.x * self.y, self.x, self.y]
+        return [self.x * self.y, self.x, self.y, 1]
 
     x = 0
     y = 0

@@ -14,11 +14,11 @@ class Point:
     def print(self):
         print("{0} {1}".format(self.x, self.y))
 
-    # Returns a list of elements for the conic equation
+    # Returns a list of elements for the conic equation (Has an unknown constant)
     def coniceq(self):
         return [self.y**2, self.x * self.y, self.x, self.y, -1]
 
-    # Returns the square of the x-coordinate for the conic equation
+    # Returns the square of the x-variable for the conic equation
     def conicsq(self):
         return -self.x**2
 
