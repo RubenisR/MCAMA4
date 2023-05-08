@@ -6,22 +6,22 @@ import numpy as np
 from typing import List
 
 
+# Define a class for for 5 point conic section
 class Point:
     def __init__(self, x, y):
         self.x = float(x)
         self.y = float(y)
 
     def print(self):
-        """
-        prints the values of the attributes "x" and "y".
-        """
         print("{0} {1}".format(self.x, self.y))
 
-    def conic_eq(self):
-        return [self.x**2, self.x * self.y, self.y**2, self.x, self.y]
+    # all squares from algorithm
+    def conic_sq(self):
+        return [self.x**2, self.y**2, 1]
 
-    def conic_constant(self):
-        return -1
+    # all equations from algorithm
+    def conic_eq(self):
+        return [self.x * self.y, self.x, self.y]
 
     x = 0
     y = 0
@@ -42,14 +42,16 @@ calcarray = np.array(inputarray)
 numrows = calcarray.shape[0]
 sol = []
 eq = []
+
 if numrows == 5:
     print("Given five points an elipse will be calculated")
+    eqarray = np.zeros((5, 5))
+    solarray = np.zeros(5)
     for i in range(5):
-        eq.append(inputarray[i].conic_eq())
-        sol.append(inputarray[i].conic_constant())
-    eqarray = np.array(eq)
-    solarray = np.array(sol)
-    solution, _, _, _ = np.linalg.lstsq(eqarray, solarray, rcond=None)
+        eqarray[i, :3] = inputarray[i].conic_eq()
+        eqarray[i, 3:] = [-1, 0]
+        solarray[i] = -inputarray[i].conic_sq()[2]
+    solution, residuals, rank, s = np.linalg.lstsq(eqarray, solarray, rcond=None)
 
 
 if solution[0] < 0:
@@ -71,7 +73,7 @@ else:
 if solution[4] < 0:
     pr_sol4 = str(solution[4])
 else:
-    pr_sol4 = "+" + str(solution[4])
+    pr_sol4 = abs(solution[4])
 
 Equation = [
     "Equation:",
