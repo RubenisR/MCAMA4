@@ -91,10 +91,25 @@ eq = []
 if numOfRows == 3:
     print("Given three points a circle will be calculated")
     for n in range(3):
+        # `eq.append(inputarray[n].circeq())` is appending the coefficients of the equation of the
+        # circle passing through the three points to the list `eq`. The coefficients are obtained by
+        # calling the `circeq()` method of the `Point` object corresponding to the `n`th point in the
+        # `inputarray`.
         eq.append(inputarray[n].circeq())
         sol.append(inputarray[n].circsq())
+    # `eqarray = np.array(eq)` is converting the list `eq` into a numpy array called `eqarray`. The
+    # `eq` list contains the coefficients of the equation of the circle passing through the three
+    # points in the input file. Converting the list to a numpy array allows for easier manipulation
+    # and calculation of the data using numpy functions.
     eqarray = np.array(eq)
     solarray = np.array(sol)
+    # `solution = np.linalg.solve(eqarray, solarray)` is using the `np.linalg.solve()` function from
+    # the numpy library to solve a system of linear equations represented by the `eqarray` and
+    # `solarray` numpy arrays. The `eqarray` array contains the coefficients of the equations, while
+    # the `solarray` array contains the solutions to those equations. The `np.linalg.solve()` function
+    # returns an array containing the solutions to the system of linear equations. In this specific
+    # code, `solution` contains the coefficients of the equation of the circle passing through the
+    # three points in the input file, if there are exactly three points.
     solution = np.linalg.solve(eqarray, solarray)
 # [\]
 

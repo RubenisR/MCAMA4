@@ -6,7 +6,6 @@ import numpy as np
 from typing import List
 
 
-# Define a class for for 5 point conic section
 class Point:
     def __init__(self, x, y):
         self.x = float(x)
@@ -15,11 +14,9 @@ class Point:
     def print(self):
         print("{0} {1}".format(self.x, self.y))
 
-    # all squares from algorithm
     def conic_sq(self):
         return [self.x**2, self.y**2, 1]
 
-    # all equations from algorithm
     def conic_eq(self):
         return [self.x * self.y, self.x, self.y]
 
