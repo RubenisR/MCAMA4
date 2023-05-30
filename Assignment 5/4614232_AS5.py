@@ -2,68 +2,83 @@ import csv
 import numpy as np
 
 
-def fetchcsv(filename):
-    # using the NumPy library to read a CSV file and convert it into a NumPy array of integers.
-    r = np.genfromtxt(filename, delimiter=",", dtype=int, names=True)
+def fetchcsv(filename_points, filename_connections):
+    # Read points matrix
+    with open(filename_points, "r") as file:
+        reader = csv.reader(file)
+        r_points = np.array([row for row in reader])
 
-    #
-    # This code is reading a CSV file and converting it into a numpy array of strings.
-    reader = csv.reader(open(filename, "r"), delimiter=",")
-    x = list(reader)
-    result = np.array(x).astype("str")
+    labels_points = list(r_points[0][1:])
+    dictionary_points = {}
 
-    Labels = []
-    # Delete the first element of the array which is the labels
-    for i in range(len(result[0])):
-        Labels.append(result[0][i])
-    del Labels[0]
+    # Convert points matrix into a dictionary
+    for i in range(1, len(r_points)):
+        point = r_points[i][0]
+        values = list(map(int, r_points[i][1:]))
+        dictionary_points[point] = {
+            label: value for label, value in zip(labels_points, values)
+        }
 
-    dictionary = {}
+    # Read connection matrix
+    with open(filename_connections, "r") as file:
+        reader = csv.reader(file)
+        r_connections = np.array([row for row in reader])
 
-    keys = []
-    values = []
+    labels_connections = list(r_connections[0][1:])
+    dictionary_connections = {}
 
-    # retrieves the corresponding values from the Labels list and appends them to the keys list.
+    # Convert connection matrix into a dictionary
+    for i in range(1, len(r_connections)):
+        point = r_connections[i][0]
+        values = []
+        for value in r_connections[i][1:]:
+            if value == "-":
+                values.append(0)  # Set missing connections as 0
+            else:
+                values.append(int(value))
+        dictionary_connections[point] = {
+            label: value for label, value in zip(labels_connections, values)
+        }
 
-    for i in range(len(r[0]) - 1):
-        keys.append(Labels[i])
+    # Calculate location matrix based on formula
+    location_matrix = {}
+    for point, connections in dictionary_connections.items():
+        if point in dictionary_points:
+            x1 = int(
+                dictionary_points[point].get("x", 0)
+            )  # Get x coordinate, default to 0 if not found
+            y1 = int(
+                dictionary_points[point].get("y", 0)
+            )  # Get y coordinate, default to 0 if not found
+            locations = {}
+            for connected_point, connection_strength in connections.items():
+                if connected_point in dictionary_points:
+                    x2 = int(
+                        dictionary_points[connected_point].get("x", 0)
+                    )  # Get x coordinate, default to 0 if not found
+                    y2 = int(
+                        dictionary_points[connected_point].get("y", 0)
+                    )  # Get y coordinate, default to 0 if not found
+                    distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+                    locations[connected_point] = distance
+            location_matrix[point] = locations
 
-    temp_dic = {}
-
-    sub_keys = []
-
-    sub_values = []
-
-    # Iterate over the rows of the matrix
-    for j in range(len(r[0]) - 1):
-        # Iterate over the rows of the matrix
-        for i in range(len(r[0]) - 1):
-            # Check if the value at position (j, i+1) is not equal to -1
-            if r[j][i + 1] != -1:
-                # Append the label associated with the column index to sub_keys
-                sub_keys.append(Labels[i])
-                # Append the value at position (j, i+1) to sub_values
-                sub_values.append(r[j][i + 1])
-        # Create a dictionary from sub_keys and sub_values using zip() and assign it to the temp_dic variable
-        for key, value in zip(sub_keys, sub_values):
-            temp_dic[key] = value
-        # Append the temp_dic dictionary to the values list
-        values.append(temp_dic)
-
-        sub_values = []
-        sub_keys = []
-        temp_dic = {}
-
-    # For each iteration, it assigns the value of the
-    # `value` variable to the key of the `key` variable in the `dictionary`. Finally, it returns the
-    # `dictionary`.
-    for key, value in zip(keys, values):
-        dictionary[key] = value
-
-    return dictionary
+    return dictionary_points, dictionary_connections, location_matrix
 
 
-points = fetchcsv("points.csv")
-# connection = fetchcsv("Connection_matrix.csv")
-print(points)
-# print(connection)
+points_file = "points.csv"
+connections_file = "Connection_matrix.csv"
+
+points, connections, location = fetchcsv(points_file, connections_file)
+
+print("Points Matrix:")
+for point, attributes in points.items():
+    print(f"{point}: {attributes}")
+
+print("\nConnection Matrix:")
+for point, connections in connections.items():
+    print(f"{point}: {connections}")
+
+print("\nLocation Matrix:")
+for point, locations in location.items():
+    print(f"{point}: {locations}")
