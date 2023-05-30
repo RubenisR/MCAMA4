@@ -8,13 +8,13 @@ def fetchcsv(filename_points, filename_connections):
         reader = csv.reader(file)
         r_points = np.array([row for row in reader])
 
-    labels_points = list(r_points[0][1:])
+    labels_points = list(map(str, r_points[0][1:]))
     dictionary_points = {}
 
     # Convert points matrix into a dictionary
     for i in range(1, len(r_points)):
         point = r_points[i][0]
-        values = list(map(int, r_points[i][1:]))
+        values = list(map(float, r_points[i][1:]))
         dictionary_points[point] = {
             label: value for label, value in zip(labels_points, values)
         }
@@ -24,7 +24,7 @@ def fetchcsv(filename_points, filename_connections):
         reader = csv.reader(file)
         r_connections = np.array([row for row in reader])
 
-    labels_connections = list(r_connections[0][1:])
+    labels_connections = list(map(str, r_connections[0][1:]))
     dictionary_connections = {}
 
     # Convert connection matrix into a dictionary
@@ -33,9 +33,9 @@ def fetchcsv(filename_points, filename_connections):
         values = []
         for value in r_connections[i][1:]:
             if value == "-":
-                values.append(0)  # Set missing connections as 0
+                values.append(0)
             else:
-                values.append(int(value))
+                values.append(float(value))
         dictionary_connections[point] = {
             label: value for label, value in zip(labels_connections, values)
         }
@@ -44,20 +44,20 @@ def fetchcsv(filename_points, filename_connections):
     location_matrix = {}
     for point, connections in dictionary_connections.items():
         if point in dictionary_points:
-            x1 = int(
-                dictionary_points[point].get("x", 0)
+            x1 = dictionary_points[point].get(
+                "x", 0
             )  # Get x coordinate, default to 0 if not found
-            y1 = int(
-                dictionary_points[point].get("y", 0)
+            y1 = dictionary_points[point].get(
+                "y", 0
             )  # Get y coordinate, default to 0 if not found
             locations = {}
             for connected_point, connection_strength in connections.items():
                 if connected_point in dictionary_points:
-                    x2 = int(
-                        dictionary_points[connected_point].get("x", 0)
+                    x2 = dictionary_points[connected_point].get(
+                        "x", 0
                     )  # Get x coordinate, default to 0 if not found
-                    y2 = int(
-                        dictionary_points[connected_point].get("y", 0)
+                    y2 = dictionary_points[connected_point].get(
+                        "y", 0
                     )  # Get y coordinate, default to 0 if not found
                     distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
                     locations[connected_point] = distance
@@ -67,7 +67,7 @@ def fetchcsv(filename_points, filename_connections):
 
 
 points_file = "points.csv"
-connections_file = "Connection_matrix.csv"
+connections_file = "connection_matrix.csv"
 
 points, connections, location = fetchcsv(points_file, connections_file)
 
