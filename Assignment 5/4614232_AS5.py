@@ -57,6 +57,8 @@ def location_matrix(filename_points, filename_connections):
                     y2 = dictionary_points[connected_point].get("y", 0)
                     distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
                     locations[connected_point] = distance
+                else:
+                    locations[connected_point] = "-"
             location_matrix[point] = locations
 
     # Output location matrix to CSV file
@@ -70,9 +72,10 @@ def location_matrix(filename_points, filename_connections):
                 if label == point:
                     row.append("-")
                 elif label in locations:
-                    row.append(locations[label])
+                    value = locations[label]
+                    row.append(value if value != 0 else "-")
                 else:
-                    row.append(0)
+                    row.append("-")
             writer.writerow(row)
 
     return dictionary_points, dictionary_connections, location_matrix
