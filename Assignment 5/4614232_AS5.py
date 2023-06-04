@@ -2,7 +2,7 @@ import csv
 import numpy as np
 
 
-def fetchcsv(filename_points, filename_connections):
+def location_matrix(filename_points, filename_connections):
     # Read points matrix
     with open(filename_points, "r") as file:
         reader = csv.reader(file)
@@ -44,24 +44,36 @@ def fetchcsv(filename_points, filename_connections):
     location_matrix = {}
     for point, connections in dictionary_connections.items():
         if point in dictionary_points:
-            x1 = dictionary_points[point].get(
-                "x", 0
-            )  # Get x coordinate, default to 0 if not found
-            y1 = dictionary_points[point].get(
-                "y", 0
-            )  # Get y coordinate, default to 0 if not found
+            x1 = dictionary_points[point].get("x", 0)
+            y1 = dictionary_points[point].get("y", 0)
             locations = {}
             for connected_point, connection_strength in connections.items():
-                if connected_point in dictionary_points:
-                    x2 = dictionary_points[connected_point].get(
-                        "x", 0
-                    )  # Get x coordinate, default to 0 if not found
-                    y2 = dictionary_points[connected_point].get(
-                        "y", 0
-                    )  # Get y coordinate, default to 0 if not found
+                if (
+                    connected_point != point
+                    and connection_strength != 0
+                    and connected_point in dictionary_points
+                ):
+                    x2 = dictionary_points[connected_point].get("x", 0)
+                    y2 = dictionary_points[connected_point].get("y", 0)
                     distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
                     locations[connected_point] = distance
             location_matrix[point] = locations
+
+    # Output location matrix to CSV file
+    with open("inputfileAS4.csv", "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow([""] + labels_connections)  # Write header row
+
+        for point, locations in location_matrix.items():
+            row = [point]
+            for label in labels_connections:
+                if label == point:
+                    row.append("-")
+                elif label in locations:
+                    row.append(locations[label])
+                else:
+                    row.append(0)
+            writer.writerow(row)
 
     return dictionary_points, dictionary_connections, location_matrix
 
@@ -69,7 +81,7 @@ def fetchcsv(filename_points, filename_connections):
 points_file = "points.csv"
 connections_file = "connection_matrix.csv"
 
-points, connections, location = fetchcsv(points_file, connections_file)
+points, connections, location = location_matrix(points_file, connections_file)
 
 print("Points Matrix:")
 for point, attributes in points.items():
