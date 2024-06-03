@@ -8,6 +8,7 @@ u = np.array([3.43, 0.99, 0.22, 0.10, 0.02])  # Voltage
 
 
 def expon_func(t, A, B):
+    print(A)
     return A * np.exp(B * t)
 
 

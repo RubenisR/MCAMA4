@@ -25,7 +25,7 @@ class Point:
 
 # Read input points from CSV file
 inputarray = []
-with open(r"input as2.csv", "r") as input:
+with open(r"input_as2.csv", "r") as input:
     locations = csv.DictReader(input)
     for pointentry in locations:
         point = Point(pointentry["x"], pointentry["y"])
